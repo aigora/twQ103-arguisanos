@@ -8,12 +8,18 @@ Herranz Gumiel, Iván
 Usuario GitHub:
 
 Vajarano Montesinos, Kevin
+
 Usuario GitHub:
+
 KevinVejaranoMontesinos
 
 Teja Asenjo, Enrique
+
 Usuario GitHub:
+
 EnriqueTeja
+
+
 ## Objetivos del trabajo
 
   * Proporcionar un calendario semanal con comidas equilibradas nutricionalmente.
