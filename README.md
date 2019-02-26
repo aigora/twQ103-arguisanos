@@ -16,9 +16,9 @@ Usuario GitHub:
 EnriqueTeja
 ## Objetivos del trabajo
 
--Proporcionar un calendario semanal con comidas equilibradas nutricionalmente.
--Promover una alimentación sana, evitando que los usuarios acaben comprando alimentos precocinados.
--Facilidad de uso, y ahorrar tiempo al usuario en organizar su alimentación.
--Dar la posibilidad de modificar el menú, añadir recetas y proporcionar alternativas.
--Evitar la repetición de platos.
--Mostrar, si se dispone y el usuario lo desea, la receta de los platos.
+*Proporcionar un calendario semanal con comidas equilibradas nutricionalmente.
+*Promover una alimentación sana, evitando que los usuarios acaben comprando alimentos precocinados.
+*Facilidad de uso, y ahorrar tiempo al usuario en organizar su alimentación.
+*Dar la posibilidad de modificar el menú, añadir recetas y proporcionar alternativas.
+*Evitar la repetición de platos.
+*Mostrar, si se dispone y el usuario lo desea, la receta de los platos.
