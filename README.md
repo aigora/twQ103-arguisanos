@@ -8,14 +8,14 @@ Herranz Gumiel, Iván
 
  ### Usuario GitHub:
 
-/n 
+`<addr>`
 Vajarano Montesinos, Kevin
 
  ### Usuario GitHub:
 
 KevinVejaranoMontesinos
 
-/n
+`<addr>`
 Teja Asenjo, Enrique
 
  ### Usuario GitHub:
