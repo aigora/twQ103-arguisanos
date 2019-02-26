@@ -4,19 +4,19 @@ Arguisanos es un proyecto que nace de la dificultad de llevar una dieta sana y e
 
 ## Integrantes del equipo
 
-Herranz Gumiel, Iván
+* Herranz Gumiel, Iván
 
  #### Usuario GitHub:
 
 
-Vajarano Montesinos, Kevin
+* Vajarano Montesinos, Kevin
 
  #### Usuario GitHub:
 
 KevinVejaranoMontesinos
 
 
-Teja Asenjo, Enrique
+* Teja Asenjo, Enrique
 
  #### Usuario GitHub:
 
