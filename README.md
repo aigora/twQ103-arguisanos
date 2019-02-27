@@ -12,9 +12,6 @@ Arguisanos es un proyecto que nace de la dificultad de llevar una dieta sana y e
 
 * [Teja Asenjo, Enrique](https://github.com/EnriqueTeja)
 
- #### Usuario GitHub:
-
-EnriqueTeja
 
 
 ## Objetivos del trabajo
