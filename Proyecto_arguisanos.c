@@ -88,22 +88,7 @@ void menu_nivel_1(){
 	printf("\t\t3-Recetario ARGUISANOS\n");
 	printf("\t\ts-Salir\n");
 }
-/*int IniciarSesion(){
-	system("cls");
-	strcpy(indentificador,"null");
-	banner_inicio(indentificador);
-	printf("\n\tIntroduzca usuario:\n");
-	gets(usuario);
-					
-	printf("Si el usuario estaba registrado se verifica su clave, si no se le pregunta si lo que quiere es registrarse\n");
-	printf("\tIntroduzca su clave:\n");
-	gets(clave);
-	printf("Si la clave no tiene relacion con el usuario devolver error y le quedan tantos intentos. \nSi intentos==0 entonces le decimos que ha realizado demasiados intentos y se cierra el programa al pulsar una tecla\n");
-	printf("Si es correcta, continua dentro del menu del usuario\n El menu del usuario sera generico pero con ficheros que dependen del usuario\n");
-	system("pause");
-	break;
-}
-*/
+
 int cargarFicheros(){
 	
 }
