@@ -21,7 +21,6 @@ int main(){
 	
 	int i=0, j=0, contador=0, verificador=1;
 	char opcion,pulse_continuar, usuario[20], clave[20], verificar_clave[20];
-	char identificador[20];
 	
 	cargarFicheros();
 	banner_inicio("inicio");
