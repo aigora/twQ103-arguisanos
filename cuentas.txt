@@ -1,6 +1,4 @@
 Enrique	Teja
-Enrique	Teja
-Marta	12345
 Ivan	Herranz
-Kevin	12345
-Jaima	1235
+Kevin	Vejarano
+Raquel	Cedazo
