@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-#define MaxUsuarios 10
+#define MaxUsuarios 15
 #define Ncaracteres 30
 #define porcentajeVitaminas 35
 #define porcentajeHidratos 40
@@ -28,34 +28,39 @@ struct Platos{
 	int tipoplato;
 };
 
+int cargarFicheroCuentas(struct Tcuentas cuentas[]);
+int cargarFicheroPlatos(struct Platos memoriaplatos[]);
 void menu_nivel_1();
 void menu_nivel_2();
 void menu_nivel_3(char opcion_2);
 void banner_inicio(char identificador[]);
 int iniciarSesion(struct Tcuentas cargarCuentas[], char usuario[]);
 int salida(char opcion);
-int cargarFicheros();
-int registrarUsuario();
-int recetario();
+int registrarUsuario(struct Tcuentas cuentas[]);
+int recetario(struct Platos memoriaplatos[]);
 int calculadoraKcal(float kcal[],char letra, int porcentaje, int masa, float kcal_100);
 int comprobador(float kcal[]);
 int menu(struct Platos memoriaplatos[],int vectorMenu[],int numero);
 int ficheroPlatos(struct Platos memoriaplatos[]);
-void impresionMenu(struct Platos memoriaplatos[]);
+int impresionMenu(struct Platos memoriaplatos[], char usuario[]);
+void imprimirMenu(struct Platos memoriaplatos[],int platos[][3]);
 
 int main(){
 	
-	int i=0, j=0, contador=0, verificador=1, recetas,intentos=0;
+	int i=0, j=0, contador=0, verificador=1, recetas,intentos=0, numerolineas;
 	char opcion,opcion_2,pulse_continuar, usuario[20], clave[20],cadena[20], verificar_clave[20];
 	char*ctime(const time_t *timer);
 	struct Platos memoriaplatos[200];
 	struct Tcuentas cargarCuentas[MaxUsuarios];
 
 	do{
-		cargarFicheros();
+		system("cls");
+		if(cargarFicheroCuentas(cargarCuentas)==-1)
+			return -1;
+		numerolineas=cargarFicheroPlatos(memoriaplatos);
 		banner_inicio("inicio");
 		menu_nivel_1();
-	
+		i=0;
 		do{
 			if(i>0)
 				printf("\tPor favor, seleccione una de las opciones en pantalla\n");
@@ -77,15 +82,17 @@ int main(){
 					system("cls");
 					banner_inicio("usuario");
 					printf("%s\n\n\n", usuario);
-					time_t curtime;
-					time(&curtime);
-					strcpy(cadena,ctime(&curtime));
-					printf("\t\t\t\t\t%s\n", cadena);
+					//time_t curtime;
+					//time(&curtime);
+					//strcpy(cadena,ctime(&curtime));
+					//printf("\t\t\t\t\t%s\n", cadena);
 					
-					do{
+					//do{
 						
-						impresionMenu(memoriaplatos);
-						menu_nivel_2();
+						if(impresionMenu(memoriaplatos,usuario)==0)
+							return 0;
+  						//}
+						/*menu_nivel_2();
 						intentos=0;
 						do{
 						if(intentos>0){
@@ -107,20 +114,19 @@ int main(){
 						}
 						
 					}while(opcion_2=='c');
-				}
-				
+				}*/	}
 			break;	
+			
 			case '2':
-				registrarUsuario();
+				registrarUsuario(cargarCuentas);
 				system("cls");
 			break;
 		
 			case '3':
-				
-				recetas=recetario();
-				if(recetas==-1)
+			
+				if(recetario(memoriaplatos)==-1)
 					return -1;
-						
+				else		
 			break;
 				
 	  		case 's':
@@ -187,15 +193,8 @@ void menu_nivel_3(char opcion_2){
 }
 
 
-int cargarFicheros(){
-	
-}
-
-
-int registrarUsuario(){
-	struct Tcuentas cuentas[MaxUsuarios];
-	int i=0,n=0, validar;
-	char opcion, usuarioMayus[Ncaracteres], usuarioCuentasMayus[Ncaracteres];
+int cargarFicheroCuentas(struct Tcuentas cuentas[]){
+	int i=0,n=0;
 	FILE*fichero;
 	fichero=fopen("cuentas.txt","r") ;
 	if (fichero == NULL){
@@ -212,6 +211,68 @@ int registrarUsuario(){
 		system("pause");
 		return -1;
 	}
+	return n;
+}
+int cargarFicheroPlatos(struct Platos memoriaplatos[]){
+	int i=0, j=0;
+	int numerolineas=0;
+	FILE *puntero;
+	char cadenaleida[200];
+	char *ptrToken;
+
+	
+	puntero=fopen("platos.csv","a+");
+	
+	if (puntero==NULL)
+	{
+		printf("No es posible abrir el fichero\n %i",puntero);
+		return -1;
+	}
+	
+
+	while (fgets(cadenaleida,200,puntero)!=NULL)
+	{
+		ptrToken = strtok(cadenaleida,";");
+		j=0;
+		while (ptrToken != NULL)
+		{
+			switch (j)
+			{
+				case 0: 
+					strcpy(memoriaplatos[i].nombrePlato,ptrToken);
+					break;
+				case 1:
+					memoriaplatos[i].kcal=atoi(ptrToken);
+					break;
+				case 2:
+					memoriaplatos[i].consideracion=*ptrToken;
+					break;
+				case 3:
+					memoriaplatos[i].consideracion2=*ptrToken;
+					break;
+				case 4:
+					memoriaplatos[i].tipoplato=atoi(ptrToken);
+					break;
+			}
+			ptrToken=strtok(NULL,";");
+			j++;
+		}
+		numerolineas++;
+		i++;
+	}
+
+	fclose(puntero);
+	return numerolineas;
+}
+
+
+int registrarUsuario(struct Tcuentas cuentas[]){
+	
+	int i=0,n=0, validar;
+	char opcion, usuarioMayus[Ncaracteres], usuarioCuentasMayus[Ncaracteres];
+	FILE*fichero;
+	
+	n=cargarFicheroCuentas(cuentas);
 	
 	do{
 		do{
@@ -265,27 +326,18 @@ int registrarUsuario(){
 
 iniciarSesion(struct Tcuentas cargarCuentas[],char usuario[]){
 
-	int j, h, i=0, intentos=0, intentosUsuario=0, validar=0;
+	int j, h, n, intentos=0, intentosUsuario=0, validar=0;
 	char usuarioMayus[Ncaracteres], usuarioCuentasMayus[Ncaracteres];
 	char clave[20];
 	
-	FILE*fichero2;
-	fichero2=fopen("cuentas.txt","r");
-	if (fichero2 == NULL){
-		printf("Error en la apertura de fichero");
-		return -1;
-	}
-		while(fscanf(fichero2,"%s %s",cargarCuentas[i].usuario,cargarCuentas[i].clave)!=EOF){
-		i++;
-	fclose(fichero2);
-	}
+	n=cargarFicheroCuentas(cargarCuentas);
 	do{		
 		printf("Introduzca usuario:\n");
 		gets(usuario);		
 		strcpy(usuarioMayus,usuario);
 		_strupr(usuarioMayus);
 	
-		for (j=0;j<=i;j++){
+		for (j=0;j<=n;j++){
 			strcpy(usuarioCuentasMayus,cargarCuentas[j].usuario);
 			_strupr(usuarioCuentasMayus);
 			
@@ -328,61 +380,14 @@ iniciarSesion(struct Tcuentas cargarCuentas[],char usuario[]){
 		return -1;
 	}
 }
-int recetario(){
+int recetario(struct Platos memoriaplatos[]){
 	float valor;
 	char excluir[35];
-	int i=0, j=0, intentos=0,numero;
-	char opcion[20],op, letra, plato[50], platoMayus[50], comparaplato[50];
-	struct Platos memoriaplatos[200];
-	int numerolineas=0;
+	int i=0, j=0, h, intentos=0,numero,numerolineas;
+	char opcion[20],op, letra, plato[50], platoMayus[50], comparaplato[50], receta[50]="receta_", texto[10][500],fichero[50],recet[50];
 	FILE *puntero;
-	char cadenaleida[200];
-	char *ptrToken;
-
-	
-	puntero=fopen("platos.csv","a+");
-	
-	if (puntero==NULL)
-	{
-		printf("No es posible abrir el fichero\n %i",puntero);
-		return -1;
-	}
-	
-
-	while (fgets(cadenaleida,200,puntero)!=NULL)
-	{
-		ptrToken = strtok(cadenaleida,";");
-		j=0;
-		while (ptrToken != NULL)
-		{
-			switch (j)
-			{
-				case 0: 
-					strcpy(memoriaplatos[i].nombrePlato,ptrToken);
-					break;
-				case 1:
-					memoriaplatos[i].kcal=atoi(ptrToken);
-					break;
-				case 2:
-					memoriaplatos[i].consideracion=*ptrToken;
-					break;
-				case 3:
-					memoriaplatos[i].consideracion2=*ptrToken;
-					break;
-				case 4:
-					memoriaplatos[i].tipoplato=atoi(ptrToken);
-					break;
-			}
-			ptrToken=strtok(NULL,";");
-			j++;
-		}
-		numerolineas++;
-		i++;
-	}
-
-	fclose(puntero);
-
-
+	FILE *ficheroReceta;
+	numerolineas=cargarFicheroPlatos(memoriaplatos);
 	intentos=0;
 	do{
 		
@@ -392,7 +397,7 @@ int recetario(){
 		for(i=0;i<numerolineas;i++){	
 			printf(" %d-%s\n",i+1,memoriaplatos[i].nombrePlato,memoriaplatos[i].kcal);
 		}
-		printf("\n\t-Si desea consultar una receta introduzca: consultar\n\t-Si desea incluir una nueva receta introduzca: incluir\n\t-Si desea eliminar una receta introduzca: eliminar\n\t-Para salir pulse s\n");
+		printf("\n\t-Si desea consultar una receta introduzca: consultar\n\t-Si desea incluir un nuevo plato introduzca: incluir\n\t-Si desea eliminar un plato introduzca: eliminar\n\t-Para salir pulse s\n");
 
 		
 		gets(opcion);
@@ -413,16 +418,116 @@ int recetario(){
 	
 		if(intentos==3){
 			printf("Demasiados intentos, intentelo mas tarde\n");
+			system("pause");
 			return -1;
 		}
 
 		switch(op){
 			case '1':
-				system("cls");
-				banner_inicio("NULL");
 				printf("Introduzca el numero de receta\n");
-				scanf("%d", &numero);
+				intentos=0;
+				do{
+					if(intentos>0)
+						printf("Ha introducido un numero que no es de ningun plato, introduzcalo de nuevo:\n");
 				
+					scanf("%d", &numero);
+					intentos++;
+				}while(numero<1&&numero>=numerolineas&&intentos!=3);
+				if(intentos==3){
+					printf("Demasiados intentos, intentelo de nuevo mas tarde\n");
+					system("pause");
+					return -1;
+				}
+				i=0;
+				while(memoriaplatos[numero-1].nombrePlato[i]!=' '&&memoriaplatos[numero].nombrePlato[i]!=' '){
+					if(memoriaplatos[numero-1].nombrePlato[i]!=' ')
+					receta[i+7]=memoriaplatos[numero-1].nombrePlato[i];
+					else
+					receta[i+7]='_';
+					i++;
+				}
+				strcat(receta,".txt");
+				strcpy(fichero,receta);
+				strcpy(recet,receta);
+				printf("%s",recet);
+				
+				ficheroReceta=fopen(fichero,"r");
+				fclose(ficheroReceta);
+				if(ficheroReceta==NULL){
+					printf("\nNo existe esta receta\n");
+					printf("\t-Si desea crearla pulse c\n");
+					printf("\t-Si desea volver pulse r\n");
+					printf("\t-Para salir pulse otra tecla\n");
+					fflush(stdin);
+					scanf("%c",&letra);
+					if(letra=='r')
+						break;
+					if(letra!='r'&&letra!='c')
+						return 0;
+					if(letra=='c'){
+					ficheroReceta=fopen(fichero,"w");
+					printf("Introduzca su receta y a continuacion pulse enter hasta alcanzar el limite de lineas:\n");
+					i=0;
+					do{
+						j=0;
+						fflush(stdin);
+						gets(texto[i]);
+						i++;
+					}while(i<20);
+					
+					for (h=0;h<i;h++){
+						fputs(texto[h],ficheroReceta);
+						fprintf(ficheroReceta, "\n");
+					}
+					fclose(ficheroReceta);
+					printf("La receta se guardo correctamente\n");
+					}
+					
+					
+				}
+				else{
+					printf("\n\t\tR E C E T A\n\n");
+					ficheroReceta=fopen(fichero,"r");
+					for(i=0;i<20;i++){
+						fgets(texto[i],100,ficheroReceta);
+						if(texto[i][0]!='\n')
+							puts(texto[i]);
+					}
+					
+					printf("\t-Si desea escribir de nuevo la receta pulse e\n");
+					printf("\t-Si desea volver pulse r\n");
+					printf("\t-Para salir pulse otra tecla\n");
+					printf("\nRecuerde que la forma de escritura es linea a linea\nSi desea sobreescribir la receta es recomendable que acuda a %s directamente\n",recet);
+					fflush(stdin);
+					scanf("%c",&letra);
+					if(letra=='r')
+						break;
+					if(letra!='r'&&letra!='e')
+						return 0;
+						
+					if(letra=='e'){
+						ficheroReceta=fopen(receta,"w");
+					printf("Introduzca su receta y a continuacion pulse enter hasta alcanzar el limite de lineas:\n");
+					i=0;
+					do{
+						j=0;
+						fflush(stdin);
+						gets(texto[i]);
+						i++;
+					}while(i<20);
+					
+					for (h=0;h<i;h++){
+						fputs(texto[h],ficheroReceta);
+						fprintf(ficheroReceta, "\n");
+					}
+					fclose(ficheroReceta);
+					printf("La receta se guardo correctamente\n");
+					system("pause");
+					}
+					
+				}
+			
+			system("cls");	
 			break;
 			
 			case '2':
@@ -468,6 +573,7 @@ int recetario(){
 				}while(letra!='H'&&letra!='V'&&letra!='P'&&intentos<3);
 				if(intentos==3){
 					printf("Demasiados intentos, intentelo mas tarde\n");
+					system("pause");
 					return -1;
 				}
 				memoriaplatos[numerolineas].kcal=valor;
@@ -487,6 +593,7 @@ int recetario(){
 				}while(letra!='H'&&letra!='V'&&letra!='P'&&intentos<3);
 				if(intentos==3){
 					printf("Demasiados intentos, intentelo mas tarde\n");
+					system("pause");
 					return -1;
 				}
 				memoriaplatos[numerolineas].consideracion2=letra;
@@ -502,6 +609,7 @@ int recetario(){
 				}while(numero!=1 &&numero!=2 &&intentos<3);
 				if(intentos==3){
 					printf("Demasiados intentos, intentelo mas tarde\n");
+					system("pause");
 					return -1 ;
 				}
 				memoriaplatos[numerolineas].tipoplato=numero;
@@ -509,7 +617,7 @@ int recetario(){
 				printf("Recuerde que los calculos se hacen a partir del aporte calorico introducido.\nSi esta de acuerdo con los datos pulse g para guardar\n");
 				fflush(stdin);
 				scanf("%c",&letra);
-			
+			    system("cls");
 				if(letra!='g'&&letra!='G'){
 					return 0;
 				}
@@ -517,6 +625,7 @@ int recetario(){
 				fprintf(puntero,"%s;%f;%c;%c;%i\n",memoriaplatos[numerolineas].nombrePlato,memoriaplatos[numerolineas].kcal,memoriaplatos[numerolineas].consideracion,memoriaplatos[numerolineas].consideracion2,memoriaplatos[numerolineas].tipoplato);
 				numerolineas++;
 				fclose(puntero);
+				
 			break;
 				
 			case '3':
@@ -534,10 +643,10 @@ int recetario(){
 				}while((numero<1||numero>=numerolineas)&&intentos<3);
 				if(intentos==3){
 					printf("Demasiados intentos, intentelo mas tarde\n");
+					system("pause");
 					return -1;
 				}
-				printf("¿Esta seguro de que desea eliminar el plato '%s'? Esto puede afectar al resto de usuarios\n",memoriaplatos[numero].nombrePlato);
-				printf("-Si desea eliminar el plato de sus preferencias inicie sesion y vaya a preferencias\n");
+				printf("Esta seguro de que desea eliminar el plato '%s'? Esto puede afectar al resto de usuarios\n",memoriaplatos[numero].nombrePlato);
 				printf("-Si desea eliminar el plato para siempre pulse g para salir y guardar los cambios\n-Pulse s si desea salir sin guardar\n");
 				intentos=0;
 				do{
@@ -793,38 +902,197 @@ int calculadoraKcal(float kcalEntrada[],char letra, int porcentaje, int masa, fl
 	fclose(puntero);
 	return numerolineas;
 }
-void impresionMenu(struct Platos memoriaplatos[]){
-	char dias[7]={'L','M','X','J','V','S','D'};
+int impresionMenu(struct Platos memoriaplatos[], char usuario[]){
+	char nombrefichero[10],ficheroSemana[40]="semana_dd_mmm_",nombreficheroExistente[40]="Mon_dd_", dias[7][3]={"Mon","Tue","Wen","Thu","Fri","Sat","Sun"},diaSemana[7]={'L','M','X','J','V','S','D'};
+	char cadena[20],dia[3],num[2],texto[30][500];
+	char opcion;
 	int q=0, n=0, i,h,j,error, platos[7][3];
-
+	
+	char*ctime(const time_t *timer);
+	FILE *fichero;
+	FILE *fichero2;
+	
+	time_t curtime;
+	time(&curtime);
+	strcpy(cadena,ctime(&curtime));
+	for(i=0;i<3;i++)
+		dia[i]=cadena[i];
+	for(i=8;i<10;i++)
+ 	num[i-8]=cadena[i];
+	
 	for(i=0;i<7;i++){
-		do{
-			menu(memoriaplatos,platos[i],i+n);
-			for(h=0;h<i;h++){
-				for(j=0;j<3;j++){
-					if(platos[i][j]==platos[h][j]){
-						error=-1;
-						break;
-					}
-					n++;
-					}
-					if(error==-1){
-						break;
-				}
-			
-			}
-			q++;
-		}while(error==-1&&q<30);
-		
-		
+		n=0;
+		for(j=0;j<3;j++)
+		if(dia[j]==dias[i][j])
+			n++;
+		if(n==3)
+			break;
 	}
+	strcpy(nombrefichero,dia);
 
+
+	if(num[1]-'0'>=i){
+		nombreficheroExistente[4]=num[0];
+		nombreficheroExistente[5]=num[1]-i;
+		ficheroSemana[7]=num[0];
+		ficheroSemana[8]=num[1]-i;
+	}
+	
+	else{
+		nombreficheroExistente[4]=num[0]-1;
+		nombreficheroExistente[5]=10+num[1]-i;
+		ficheroSemana[7]=num[0]-1;
+		ficheroSemana[8]=10+num[1]-i;
+	}
+	for(i=0;i<3;i++){
+		ficheroSemana[i+10]=cadena[i+4];
+	}		
+	strcat(ficheroSemana,usuario);
+	strcat(nombreficheroExistente,usuario);
+	strcat(ficheroSemana,".txt");
+	strcat(nombreficheroExistente,".txt");
+	strcat(nombrefichero,"_");
+	strcat(nombrefichero,num);
+	strcat(nombrefichero,".txt");
+	do{
+		fichero=fopen(nombreficheroExistente,"r");
+		fichero2=fopen(ficheroSemana,"r");
+		if(fichero==NULL||fichero2==NULL||opcion=='n'||opcion=='N'){
+			system("cls");
+			banner_inicio("null");
+			printf("\tSu menu de esta semana se ha creado correctamente\n\n\tSi desea imprimirlo en papel en la carpeta del programa busque el archivo: %s\n\n",ficheroSemana);
+			if(fichero==NULL||fichero2==NULL){
+				for(i=0;i<7;i++){
+					do{
+						menu(memoriaplatos,platos[i],i+n);
+						for(h=0;h<i;h++){
+							for(j=0;j<3;j++){
+								if(platos[i][j]==platos[h][j]){
+									error=-1;
+									break;
+								}
+								n++;
+								}
+								if(error==-1){
+									break;
+							}
+						
+						}
+						q++;
+					}while(error==-1&&q<30);
+					
+					
+				}
+			}
+			fichero=fopen(nombreficheroExistente,"w");
+			
+			for(j=0;j<7;j++){
+				
+				fprintf(fichero,"%d\t%d\t%d\n",platos[j][0],platos[j][1],platos[j][2]);
+	
+			}
+			
+			fclose(fichero);
+			fichero2=fopen(ficheroSemana,"w");
+			
+			fprintf(fichero2,"\n______________________________________________________________________________________________________________________\n");	
+			for(j=0;j<7;j++){
+				for(h=0;h<7;h++)
+				fprintf(fichero2," ");
+				
+				fprintf(fichero,"%c",diaSemana[j]);
+			for(h=8;h<14;h++)
+				fprintf(fichero2," ");	
+				fprintf(fichero2," | ");
+			}
+			fprintf(fichero2,"\n______________________________________________________________________________________________________________________\n");
+			fprintf(fichero2,"\t\t\t\t\t\t    C O M I D A\n______________________________________________________________________________________________________________________\n");
+			for(i=0;i<3;i++){
+					
+				for(j=0;j<7;j++){
+					
+					for(h=0;h<14;h++)
+					fprintf(fichero2,"%c",memoriaplatos[platos[j][i]].nombrePlato[h]);
+					fprintf(fichero2," | ");
+				}
+				fprintf(fichero,"\n");
+				for(j=0;j<7;j++){
+					for(h=14;h<28;h++)
+					fprintf(fichero2,"%c",memoriaplatos[platos[j][i]].nombrePlato[h]);
+					fprintf(fichero2," | ");
+				}
+				fprintf(fichero2,"\n______________________________________________________________________________________________________________________\n");
+				if(i==1)
+					fprintf(fichero2, "\t\t\t\t\t\t      C E N A\n______________________________________________________________________________________________________________________\n");
+			}
+			fclose(fichero2);
+		}
+		
+			fichero=fopen(nombreficheroExistente,"r");
+			for(j=0;j<7;j++){
+				
+				fscanf(fichero,"%d %d %d",&platos[j][0],&platos[j][1],&platos[j][2]);
+	
+			}
+		
+		imprimirMenu(memoriaplatos,platos);
+		printf("\n\n\t-Si desea crear un nuevo menu pulse n\n\t-Pulse r para volver al menu\n\t-Pulse s para salir\n");
+		fflush(stdin);
+		scanf("%c",&opcion);
+		if(opcion=='n'||opcion=='N'){
+		do{
+			for(i=0;i<7;i++){
+					do{
+						menu(memoriaplatos,platos[i],i+n);
+						for(h=0;h<i;h++){
+							for(j=0;j<3;j++){
+								if(platos[i][j]==platos[h][j]){
+									error=-1;
+									break;
+								}
+								n++;
+								}
+								if(error==-1){
+									break;
+							}
+						
+						}
+						q++;
+					}while(error==-1&&q<30);
+					
+					
+				}
+				imprimirMenu(memoriaplatos,platos);
+			printf("\n\n\t-Si desea guargar este menu pulse g\n\t-Si desea crear otro menu pulse c\n\t-Si desea volver al menu principal pulse r\n\t-Para salir pulse s \n");
+			fflush(stdin);
+			scanf("%c",&opcion);
+		}while(opcion=='c'||opcion=='C');
+			
+			if(opcion=='g'||opcion=='G')
+				opcion='n';
+		}
+		
+	}while(opcion=='n'||opcion=='N');
+	if(opcion=='s'||opcion=='S')
+		return 0;
+}
+void imprimirMenu(struct Platos memoriaplatos[],int platos[][3]){
+
+	char diaSemana[7]={'L','M','X','J','V','S','D'};
+	int j, h,i;
+	char*ctime(const time_t *timer);
+	char cadena[20];
+	time_t curtime;
+	time(&curtime);
+	strcpy(cadena,ctime(&curtime));
+	
+	printf("\t\t\t\t\t\t%s\n", cadena);
 	printf("\n______________________________________________________________________________________________________________________\n");	
 	for(j=0;j<7;j++){
 		for(h=0;h<7;h++)
 		printf(" ");
 		
-		printf("%c",dias[j]);
+		printf("%c",diaSemana[j]);
 	for(h=8;h<14;h++)
 		printf(" ");	
 		printf(" | ");
@@ -847,7 +1115,6 @@ void impresionMenu(struct Platos memoriaplatos[]){
 		}
 		printf("\n______________________________________________________________________________________________________________________\n");
 		if(i==1)
-			printf("\t\t\t\t\t\t      C E N A\n______________________________________________________________________________________________________________________\n");
+			printf( "\t\t\t\t\t\t      C E N A\n______________________________________________________________________________________________________________________\n");
 	}
-
 }
